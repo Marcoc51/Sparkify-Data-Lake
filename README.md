@@ -1,10 +1,10 @@
-# Sparkify Data Warehouse
+# Sparkify Data Lake
 
 ## Purpose
-This database is designed to support the analytical goals of Sparkify, a startup in the music streaming industry. The database will store user activity data, such as songs played and user information, and enable analysts to query and derive insights from the data.
+The purpose of this database is to provide Sparkify with a data analytics tool that enables them to extract meaningful insights from their user and song data. With this database, Sparkify will be able to run queries on user listening patterns, most popular songs/artists, and other trends that will help them make better business decisions.
 
 ## Schema Design and ELT Pipeline
-The database uses a star schema design, with a central fact table containing user activity data and multiple dimension tables that provide context for the activities. The ELT pipeline loads data from JSON files into staging tables, transforms the data using SQL queries, and then loads the data into the fact and dimension tables.
+The database uses a star schema that is optimized for analytical queries. The schema consists of four tables:
 
 ### Fact Table
 - **songplays** - records in log data associated with song plays i.e. records with page NextSong
@@ -18,12 +18,21 @@ The database uses a star schema design, with a central fact table containing use
 - **artists** - artists in music database
     - *artist_id, name, location, latitude, longitude*
 - **time** - timestamps of records in songplays broken down into specific units
-    - *start_time, hour, day, week, month, year, weekday*
+    - *start_time, hour, day, week, month, year*
 
-### ETL Pipeline
-1. Load data from JSON files into staging tables using COPY command.
-2. Transform data in the staging tables using SQL queries.
-3. Load data into fact and dimension tables using INSERT command.
+The schema design is based on the principle of data normalization. The data is separated into tables in such a way that each table is dedicated to a specific type of information. In addition, the schema uses surrogate keys in order to avoid data duplication and improve performance.
 
-## Usage
-To create the database and tables, run `create_tables.py`. To load data into the tables, run `etl.py`.
+## ETL Pipeline
+The ETL pipeline consists of two main functions that extract the data from AWS S3, transform it into a format suitable for the database, and load it into the appropriate tables.
+
+### `process_song_data`
+This function extracts song data from JSON files stored in AWS S3, transforms it into the appropriate format, and loads it into two tables: `songs` and `artists`. The songs table is partitioned by year and artist_id.
+
+### `process_log_data`
+This function extracts log data from JSON files stored in AWS S3, transforms it into the appropriate format, and loads it into three tables: users, time, and songplays. The time table is partitioned by year and month, and the songplays table is partitioned by year and month as well.
+
+## Running the ETL Pipeline
+To run the ETL pipeline, follow these steps:
+
+Add AWS access and secret keys to the `dl.cfg` file.
+Run the `etl.py` script using the command `python etl.py`.
