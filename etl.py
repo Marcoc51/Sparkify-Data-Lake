@@ -72,7 +72,7 @@ def process_log_data(spark, input_data, output_data):
     df = spark.read.json(log_data)
     
     # filter by actions for song plays
-    df = df.filter(df.page == 'NextSong').select('ts', 'userId', 'level', 'song', 'artist', 'sessionId', 'location', 'userAgent')
+    df = df.filter(df.page == 'NextSong')
 
     # extract columns for users table    
     users_table = df.select('userId', 'firstName', 'lastName', 'gender', 'level')
